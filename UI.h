@@ -19,7 +19,7 @@ void printHeading() {
 }
 
 void printMap(Map map, int cheeseCollected, int cheeseGoal) {
-    system("clear");
+    system("CLS");
     cout << "Maze:\n" << map;
     cout << "Cheese collected: " << cheeseCollected << " of " << cheeseGoal << endl;
 }
