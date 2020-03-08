@@ -279,7 +279,7 @@ void Square::updateOutput() {
             color = 9;
         } else {
             output = 'X';
-            color = 1;
+            color = 4;
         }
     } else if (catNumber > 0) {
         output = '!';

@@ -18,35 +18,35 @@ void printHeading() {
     cout << instruction << endl;
 }
 
-void printMap(Map map, int cheeseCollected, int cheeseGoal) {
+void printMap(const Map& map, int cheeseCollected, int cheeseGoal) {
     system("CLS");
     cout << "Maze:\n" << map;
     cout << "Cheese collected: " << cheeseCollected << " of " << cheeseGoal << endl;
 }
 
-bool inputCheck(char input) {
+char getInput() {
+    char input;
+    cout << "Enter your move [WASD?]: ";
+    cin >> input;
+    input = toupper(input);
+    cin.sync();
     char correctInputs[] = {'W', 'A', 'S', 'D', 'M', 'C'};
     for (char correctInput: correctInputs) {
         if (correctInput == input) {
-            return true;
+            return input;
         }
     }
     if (input == '?') {
+        system("CLS");
         cout << instruction << endl;
-        return false;
+        system("pause");
+        return '\0';
     }
-    cout << "Invalid move. Please enter just A (left), S (down), D (right), or W (up).\n";
-    return false;
+    return '\1';
 }
 
-char getInput() {
-    char input;
-    do {
-        cout << "Enter your move [WASD?]: ";
-        cin >> input;
-        input = toupper(input);
-    } while (!inputCheck(input));
-    return input;
+void inputInvalid() {
+    cout << "Invalid move. Please enter just A (left), S (down), D (right), or W (up).\n";
 }
 
 void moveInvalid() {

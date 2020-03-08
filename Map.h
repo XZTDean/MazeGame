@@ -78,8 +78,8 @@ private:
 
     short numberOfAdjacentWalls(int xCoordinate, int yCoordinate);
 
-    const int HEIGHT = 20;
-    const int WIDTH = 18;
+    const int HEIGHT = 15;
+    const int WIDTH = 20;
     Square** maze;
 };
 

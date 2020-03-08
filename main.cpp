@@ -2,14 +2,14 @@
 #include "Coordinate.h"
 #include "UI.h"
 
-Map map;
+Map* map;
 
 class Mouse {
 public:
     Mouse() {
         coordinate = Coordinate(1, 1);
-        map.getSquare(coordinate).setMouse(true);
-        map.revealAroundMouse(coordinate);
+        map->getSquare(coordinate).setMouse(true);
+        map->revealAroundMouse(coordinate);
     }
 
     bool move(char direction) {
@@ -28,11 +28,13 @@ public:
                 coordinate.increaseX();
                 break;
         }
-        if (!map.getSquare(coordinate).setMouse(true)) {
+        map->getSquare(previous).setMouse(false);
+        if (!map->getSquare(coordinate).setMouse(true)) {
+            coordinate = previous;
+            map->getSquare(previous).setMouse(true);
             return false;
         }
-        map.getSquare(previous).setMouse(false);
-        map.revealAroundMouse(coordinate);
+        map->revealAroundMouse(coordinate);
         return true;
     }
 
@@ -47,7 +49,7 @@ public:
     Cat(int xCoordinate, int yCoordinate) {
         coordinate = Coordinate(xCoordinate, yCoordinate);
         previous = Coordinate(xCoordinate, yCoordinate);
-        map.getSquare(coordinate).addCat();
+        map->getSquare(coordinate).addCat();
     }
 
     void moveCat() {
@@ -56,7 +58,7 @@ public:
             move(directions.front());
         } else {
             char preDirection = coordinate.getDirection(previous);
-            for (vector<char>::iterator it = directions.begin(); it != directions.end(); ++it) {
+            for (vector<char>::iterator it = directions.begin(); it < directions.end(); ++it) {
                 if (*it == preDirection) {
                     directions.erase(it);
                 }
@@ -82,8 +84,8 @@ private:
                 coordinate.increaseX();
                 break;
         }
-        map.getSquare(previous).removeCat();
-        map.getSquare(coordinate).addCat();
+        map->getSquare(previous).removeCat();
+        map->getSquare(coordinate).addCat();
     }
 
     vector<char> findPath(){
@@ -96,16 +98,16 @@ private:
         right.increaseX();
         Coordinate left = coordinate.clone();
         left.decreaseX();
-        if (!map.getSquare(up).isWall()) {
+        if (!map->getSquare(up).isWall()) {
             directions.push_back('W');
         }
-        if (!map.getSquare(down).isWall()) {
+        if (!map->getSquare(down).isWall()) {
             directions.push_back('S');
         }
-        if (!map.getSquare(right).isWall()) {
+        if (!map->getSquare(right).isWall()) {
             directions.push_back('D');
         }
-        if (!map.getSquare(left).isWall()) {
+        if (!map->getSquare(left).isWall()) {
             directions.push_back('A');
         }
         return directions;
@@ -125,76 +127,110 @@ void generateCheese() {
     int xCoordinate;
     int yCoordinate;
     while (!valid) {
-        xCoordinate = (rand() % (map.getWidth() - 2)) + 1;
-        yCoordinate = (rand() % (map.getHeight() - 2)) + 1;
-        if (!map.getSquare(xCoordinate, yCoordinate).isWall()) {
+        xCoordinate = (rand() % (map->getWidth() - 2)) + 1;
+        yCoordinate = (rand() % (map->getHeight() - 2)) + 1;
+        if (!map->getSquare(xCoordinate, yCoordinate).isWall()) {
             valid = true;
         } else {
             continue;
         }
         for (int i = yCoordinate - 1; i <= yCoordinate + 1; ++i) {
             for (int j = xCoordinate - 1; j <= xCoordinate + 1; ++j) {
-                if (map.getSquare(j, i).isMouse()) {
+                if (map->getSquare(j, i).isMouse()) {
                     valid = false;
                 }
             }
         }
     }
     cheese = new Coordinate(xCoordinate, yCoordinate);
-    map.getSquare(*cheese).setCheese(true);
+    map->getSquare(*cheese).setCheese(true);
 }
 
 void getCheese() {
     cheeseCollected++;
-    map.getSquare(*cheese).setCheese(false);
-    generateCheese();
+    map->getSquare(*cheese).setCheese(false);
     if (cheeseCollected >= cheeseGoal) {
         gameEnd = true;
         cout << "Congratulations! You won!\n";
-        map.setAllVisible();
-        printMap(map, cheeseCollected, cheeseGoal);
+        map->setAllVisible();
+        printMap(*map, cheeseCollected, cheeseGoal);
+    } else {
+        generateCheese();
     }
 }
 
 void eatenByCat() {
     cout << "I'm sorry, you have been eaten!\n";
     gameEnd = true;
-    map.setAllVisible();
-    printMap(map, cheeseCollected, cheeseGoal);
+    map->setAllVisible();
+    printMap(*map, cheeseCollected, cheeseGoal);
     cout << "GAME OVER; please try again.\n";
 }
 
 char inputHandle() {
     char input;
-    bool isCheat;
+    bool reInput;
     do {
         input = getInput();
-        if (input == 'M') {
-            map.setAllVisible();
-            isCheat = true;
-        } else if (input == 'C') {
-            cheeseGoal = 1;
-            isCheat = true;
-        } else {
-            isCheat = false;
+        switch (input) {
+            case 'M':
+                map->setAllVisible();
+                reInput = true;
+                printMap(*map, cheeseCollected, cheeseGoal);
+                break;
+            case 'C':
+                cheeseGoal = 1;
+                reInput = true;
+                printMap(*map, cheeseCollected, cheeseGoal);
+                break;
+            case '\0':
+                reInput = true;
+                printMap(*map, cheeseCollected, cheeseGoal);
+                break;
+            case '\1':
+                reInput = true;
+                printMap(*map, cheeseCollected, cheeseGoal);
+                inputInvalid();
+                break;
+            default:
+                reInput = false;
         }
-    } while (isCheat);
+    } while (reInput);
     return input;
 }
 
 int main() {
+    map = new Map;
     Mouse mouse;
     Cat* cats = new Cat[3];
-    cats[0] = Cat(map.getWidth() - 2, 1);
-    cats[1] = Cat(1, map.getHeight() - 2);
-    cats[2] = Cat(map.getWidth() - 2, map.getHeight() - 2);
+    cats[0] = Cat(map->getWidth() - 2, 1);
+    cats[1] = Cat(1, map->getHeight() - 2);
+    cats[2] = Cat(map->getWidth() - 2, map->getHeight() - 2);
     generateCheese();
     char input;
 
-    printHeading();
+    printMap(*map, cheeseCollected, cheeseGoal);
     while (!gameEnd) {
-        printMap(map, cheeseCollected, cheeseGoal);
+        printMap(*map, cheeseCollected, cheeseGoal);
+        bool isValidInput;
+
+        //mouse move
+        input = inputHandle();
+        isValidInput = mouse.move(input);
+        while (!isValidInput) {
+            printMap(*map, cheeseCollected, cheeseGoal);
+            moveInvalid();
+            input = inputHandle();
+            isValidInput = mouse.move(input);
+        }
+
+        for (int i = 0; i < 3; ++i) {
+            cats[i].moveCat();
+        }
     }
+
     delete[] cats;
+    delete map;
+    system("pause");
     return 0;
 }
