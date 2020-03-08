@@ -53,17 +53,22 @@ public:
     }
 
     void moveCat() {
-        vector<char> directions = findPath();
-        if (directions.size() == 1) {
-            move(directions.front());
+        char mouseDirection = chaseMouse();
+        if (chaseMouse() != '\0') {
+            move(mouseDirection);
         } else {
-            char preDirection = coordinate.getDirection(previous);
-            for (vector<char>::iterator it = directions.begin(); it < directions.end(); ++it) {
-                if (*it == preDirection) {
-                    directions.erase(it);
+            vector<char> directions = findPath();
+            if (directions.size() == 1) {
+                move(directions.front());
+            } else {
+                char preDirection = coordinate.getDirection(previous);
+                for (vector<char>::iterator it = directions.begin(); it < directions.end(); ++it) {
+                    if (*it == preDirection) {
+                        directions.erase(it);
+                    }
                 }
+                move(directions[rand() % directions.size()]);
             }
-            move(directions[rand() % directions.size()]);
         }
     }
 
@@ -113,6 +118,53 @@ private:
         return directions;
     }
 
+    char chaseMouse() {
+        bool hasUp, hasDown, hasRight, hasLeft;
+        Coordinate up = coordinate.clone();
+        hasUp = true;
+        Coordinate down = coordinate.clone();
+        hasDown = true;
+        Coordinate right = coordinate.clone();
+        hasRight = true;
+        Coordinate left = coordinate.clone();
+        hasLeft = true;
+        while (hasUp || hasDown || hasRight || hasLeft) {
+            if (map->getSquare(up).isWall()) {
+                hasUp = false;
+            } else {
+                up.decreaseY();
+                if (map->getSquare(up).isMouse()) {
+                    return 'W';
+                }
+            }
+            if (map->getSquare(down).isWall()) {
+                hasDown = false;
+            } else {
+                down.increaseY();
+                if (map->getSquare(down).isMouse()) {
+                    return 'S';
+                }
+            }
+            if (map->getSquare(right).isWall()) {
+                hasRight = false;
+            } else {
+                right.increaseX();
+                if (map->getSquare(right).isMouse()) {
+                    return 'D';
+                }
+            }
+            if (map->getSquare(left).isWall()) {
+                hasLeft = false;
+            } else {
+                left.decreaseX();
+                if (map->getSquare(left).isMouse()) {
+                    return 'A';
+                }
+            }
+        }
+        return '\0';
+    }
+
     Coordinate coordinate;
     Coordinate previous;
 };
@@ -151,9 +203,9 @@ void getCheese() {
     map->getSquare(*cheese).setCheese(false);
     if (cheeseCollected >= cheeseGoal) {
         gameEnd = true;
-        cout << "Congratulations! You won!\n";
         map->setAllVisible();
         printMap(*map, cheeseCollected, cheeseGoal);
+        cout << "Congratulations! You won!\n";
     } else {
         generateCheese();
     }
