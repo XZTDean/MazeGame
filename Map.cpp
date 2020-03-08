@@ -15,15 +15,18 @@ int Map::getWidth() const {
     return WIDTH;
 }
 
-Map::Map() {
+Map::Map(int width, int height) {
     srand(time(0));
+    WIDTH = width;
+    HEIGHT = height;
+
     maze = new Square*[HEIGHT];
     Square* cells = new Square[HEIGHT * WIDTH];
     for (int i = 0; i < HEIGHT; ++i) {
         maze[i] = cells + WIDTH * i;
     }
     generateMap();
-    breakWall(20);
+    breakWall();
     //reveal edge
     for (int i = 0; i < HEIGHT; ++i) {
         maze[i][0].setVisible();
@@ -64,7 +67,8 @@ void Map::setAllVisible() {
     }
 }
 
-void Map::breakWall(int numberOfWall) {
+void Map::breakWall() {
+    int numberOfWall = (WIDTH - 2) * (HEIGHT - 2) / 10;
     int xCoordinate;
     int yCoordinate;
     for (int i = 0; i < numberOfWall; i++) {
@@ -163,7 +167,6 @@ void Map::generateMap() {
     if (WIDTH % 2 == 0) {
         for (int i = 0; i < (HEIGHT + 2); ++i) {
             generationMaze[i][WIDTH].setWall(true);
-            generationMaze[i][WIDTH].setVisible();
             if (i % 2 != 0) {
                 generationMaze[i][WIDTH - 1].setWall(true);
             }
@@ -173,10 +176,8 @@ void Map::generateMap() {
     if (HEIGHT % 2 == 0) {
         for (int i = 1; i <= WIDTH; i++) {
             generationMaze[HEIGHT][i].setWall(true);
-            generationMaze[HEIGHT][i].setVisible();
             if (i % 2 != 0) {
                 generationMaze[HEIGHT - 1][i].setWall(true);
-                generationMaze[HEIGHT - 1][i].setVisible();
             }
         }
     }

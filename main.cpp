@@ -252,7 +252,7 @@ char inputHandle() {
 }
 
 int main() {
-    map = new Map;
+    map = greeting();
     Mouse mouse;
     Cat* cats = new Cat[3];
     cats[0] = Cat(map->getWidth() - 2, 1);
@@ -261,7 +261,6 @@ int main() {
     generateCheese();
     char input;
 
-    printMap(*map, cheeseCollected, cheeseGoal);
     while (!gameEnd) {
         printMap(*map, cheeseCollected, cheeseGoal);
         bool isValidInput;

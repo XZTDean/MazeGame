@@ -51,7 +51,7 @@ private:
 
 class Map {
 public:
-    Map();
+    Map(int width, int height);
 
     ~Map();
 
@@ -72,14 +72,14 @@ public:
 private:
     void generateMap();
 
-    void breakWall(int numberOfWall);
+    void breakWall();
 
     bool hasBigOpenCell(int xCoordinate, int yCoordinate);
 
     short numberOfAdjacentWalls(int xCoordinate, int yCoordinate);
 
-    const int HEIGHT = 15;
-    const int WIDTH = 20;
+    int HEIGHT;
+    int WIDTH;
     Square** maze;
 };
 
