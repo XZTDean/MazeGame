@@ -51,9 +51,13 @@ public:
         }
     }
 
-    bool isEqual(Coordinate otherCoordinate) {
-        return  this->xCoordinate == otherCoordinate.xCoordinate &&
-                this->yCoordinate == otherCoordinate.yCoordinate;
+    bool operator==(const Coordinate& rhs) const {
+        return xCoordinate == rhs.xCoordinate &&
+               yCoordinate == rhs.yCoordinate;
+    }
+
+    bool operator!=(const Coordinate& rhs) const {
+        return !(rhs == *this);
     }
 
 private:

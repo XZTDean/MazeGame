@@ -331,7 +331,7 @@ Square::suspect(Coordinate coordinate, Coordinate lastVisited, Square** generati
     Square& up = generationMaze[upCoordinate.getY()][upCoordinate.getX()];
     Square& down = generationMaze[downCoordinate.getY()][downCoordinate.getX()];
 
-    if (!leftCoordinate.isEqual(lastVisited) && !left.isWall()) {
+    if (leftCoordinate != lastVisited && !left.isWall()) {
         if (left.isVisited) {
             if (!isBacktracking) {
                 generationMaze[leftCoordinate.getY()][leftCoordinate.getX() + 1].setWall(true);
@@ -342,7 +342,7 @@ Square::suspect(Coordinate coordinate, Coordinate lastVisited, Square** generati
             availableNextMoves.push_back(leftCoordinate);
         }
     }
-    if (!rightCoordinate.isEqual(lastVisited) && !right.isWall()) {
+    if (rightCoordinate != lastVisited && !right.isWall()) {
         if (right.isVisited) {
             if (!isBacktracking) {
                 generationMaze[rightCoordinate.getY()][rightCoordinate.getX() - 1].setWall(true);
@@ -353,7 +353,7 @@ Square::suspect(Coordinate coordinate, Coordinate lastVisited, Square** generati
             availableNextMoves.push_back(rightCoordinate);
         }
     }
-    if (!upCoordinate.isEqual(lastVisited) && !up.isWall()) {
+    if (upCoordinate != lastVisited && !up.isWall()) {
         if (up.isVisited) {
             if (!isBacktracking) {
                 generationMaze[upCoordinate.getY() + 1][upCoordinate.getX()].setWall(true);
@@ -364,7 +364,7 @@ Square::suspect(Coordinate coordinate, Coordinate lastVisited, Square** generati
             availableNextMoves.push_back(upCoordinate);
         }
     }
-    if (!downCoordinate.isEqual(lastVisited) && !down.isWall()) {
+    if (downCoordinate != lastVisited && !down.isWall()) {
         if (down.isVisited) {
             if (!isBacktracking) {
                 generationMaze[downCoordinate.getY() - 1][downCoordinate.getX()].setWall(true);
