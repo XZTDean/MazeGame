@@ -245,9 +245,9 @@ private:
     Coordinate previous;
 };
 
-bool gameEnd = false;
-int cheeseCollected = 0;
-int cheeseGoal = 5;
+bool gameEnd;
+int cheeseCollected;
+int cheeseGoal;
 Coordinate* cheese;
 
 void generateCheese() {
@@ -336,55 +336,74 @@ void review() {
 }
 
 int main() {
-    map = greeting();
-    gameRecord.emplace_back();
-    Mouse mouse;
-    Cat* cats = new Cat[3];
-    cats[0] = Cat(map->getWidth() - 2, 1);
-    cats[1] = Cat(1, map->getHeight() - 2);
-    cats[2] = Cat(map->getWidth() - 2, map->getHeight() - 2);
-    generateCheese();
-    gameRecord.back().setCheese(*cheese);
-    gameRecord.back().setCheeseNum(cheeseCollected, cheeseGoal);
-
-    char input;
-
-    while (!gameEnd) {
-        printMap(*map, cheeseCollected, cheeseGoal);
-        bool isValidInput;
+    bool restart;
+    do {
+        gameEnd = false;
+        cheeseCollected = 0;
+        cheeseGoal = 5;
+        system("CLS");
+        map = greeting();
         gameRecord.emplace_back();
-
-        //mouse move
-        input = inputHandle();
-        isValidInput = mouse.move(input);
-        while (!isValidInput) {
-            printMap(*map, cheeseCollected, cheeseGoal);
-            moveInvalid();
-            input = inputHandle();
-            isValidInput = mouse.move(input);
-        }
-
-        //cat move
-        for (int i = 0; i < 3; ++i) {
-            cats[i].moveCat();
-        }
-
+        Mouse mouse;
+        Cat* cats = new Cat[3];
+        cats[0] = Cat(map->getWidth() - 2, 1);
+        cats[1] = Cat(1, map->getHeight() - 2);
+        cats[2] = Cat(map->getWidth() - 2, map->getHeight() - 2);
+        generateCheese();
         gameRecord.back().setCheese(*cheese);
         gameRecord.back().setCheeseNum(cheeseCollected, cheeseGoal);
-    }
 
-    char endGameInput = gameReview();
-    switch (endGameInput) {
-        case 'G':
-        case 'g':
-            gameRecord.back().clear();
-            review();
-            break;
-    }
+        char input;
 
-    delete cheese;
-    delete[] cats;
-    delete map;
-    system("pause");
+        while (!gameEnd) {
+            printMap(*map, cheeseCollected, cheeseGoal);
+            bool isValidInput;
+            gameRecord.emplace_back();
+
+            //mouse move
+            input = inputHandle();
+            isValidInput = mouse.move(input);
+            while (!isValidInput) {
+                printMap(*map, cheeseCollected, cheeseGoal);
+                moveInvalid();
+                input = inputHandle();
+                isValidInput = mouse.move(input);
+            }
+
+            //cat move
+            for (int i = 0; i < 3; ++i) {
+                cats[i].moveCat();
+            }
+
+            gameRecord.back().setCheese(*cheese);
+            gameRecord.back().setCheeseNum(cheeseCollected, cheeseGoal);
+        }
+
+        bool endGame = true;
+        while (endGame) {
+            char endGameInput = gameReview();
+            switch (endGameInput) {
+                case 'G':
+                case 'g':
+                    gameRecord.back().clear();
+                    review();
+                    break;
+                case 'R':
+                case 'r':
+                    restart = true;
+                    endGame = false;
+                    break;
+                default:
+                    restart = false;
+                    endGame = false;
+            }
+        }
+
+        gameRecord.clear();
+        delete cheese;
+        delete[] cats;
+        delete map;
+    } while (restart);
+//    system("pause");
     return 0;
 }
