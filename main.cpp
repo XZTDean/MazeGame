@@ -1,9 +1,77 @@
+#include <ostream>
 #include "Map.h"
 #include "Coordinate.h"
 #include "UI.h"
 
 Map* map;
-vector<Coordinate> gameRecord;
+class Record {
+public:
+    Record() {
+        cat1 = Coordinate(-1, -1);
+        cat2 = Coordinate(-1, -1);
+        cat3 = Coordinate(-1, -1);
+    }
+
+    void setMouse(Coordinate mouse) {
+        Record::mouse = mouse;
+    }
+
+    void setCat(Coordinate cat) {
+        Coordinate tmp(-1, -1);
+        if (cat1 == tmp) {
+            cat1 = cat;
+        } else if (cat2 == tmp) {
+            cat2 = cat;
+        } else if (cat3 == tmp) {
+            cat3 = cat;
+        }
+    }
+
+    void setCheese(Coordinate cheese) {
+        Record::cheese = cheese;
+    }
+
+    void setCheeseNum(int cheeseCollected, int cheeseGoal) {
+        Record::cheeseCollected = cheeseCollected;
+        Record::cheeseGoal = cheeseGoal;
+    }
+
+    void set() const {
+        map->getSquare(mouse).setMouse(true);
+        map->getSquare(cat1).addCat();
+        map->getSquare(cat2).addCat();
+        map->getSquare(cat3).addCat();
+        if (cheese != mouse) {
+            map->getSquare(cheese).setCheese(true);
+        }
+    }
+
+    void clear() const {
+        map->getSquare(mouse).setMouse(false);
+        map->getSquare(cat1).removeCat();
+        map->getSquare(cat2).removeCat();
+        map->getSquare(cat3).removeCat();
+        map->getSquare(cheese).setCheese(false);
+    }
+
+    friend ostream& operator<<(ostream& os, const Record& record) {
+        record.set();
+        printMap(*map, record.cheeseCollected, record.cheeseGoal);
+        record.clear();
+        return os;
+    }
+
+private:
+    Coordinate mouse;
+    Coordinate cat1;
+    Coordinate cat2;
+    Coordinate cat3;
+    Coordinate cheese;
+    int cheeseCollected;
+    int cheeseGoal;
+};
+
+vector<Record> gameRecord;
 
 class Mouse {
 public:
@@ -11,7 +79,7 @@ public:
         coordinate = Coordinate(1, 1);
         map->getSquare(coordinate).setMouse(true);
         map->revealAroundMouse(coordinate);
-        gameRecord.push_back(coordinate);
+        gameRecord.back().setMouse(coordinate);
     }
 
     bool move(char direction) {
@@ -37,7 +105,7 @@ public:
             return false;
         }
         map->revealAroundMouse(coordinate);
-        gameRecord.push_back(coordinate);
+        gameRecord.back().setMouse(coordinate);
         return true;
     }
 
@@ -53,7 +121,7 @@ public:
         coordinate = Coordinate(xCoordinate, yCoordinate);
         previous = Coordinate(xCoordinate, yCoordinate);
         map->getSquare(coordinate).addCat();
-        gameRecord.push_back(coordinate);
+        gameRecord.back().setCat(coordinate);
     }
 
     void moveCat() {
@@ -74,7 +142,7 @@ public:
                 move(directions[rand() % directions.size()]);
             }
         }
-        gameRecord.push_back(coordinate);
+        gameRecord.back().setCat(coordinate);
     }
 
 private:
@@ -124,6 +192,9 @@ private:
     }
 
     char chaseMouse() {
+        if (map->getSquare(coordinate).isMouse()) {
+            return 'X';
+        }
         bool hasUp, hasDown, hasRight, hasLeft;
         Coordinate up = coordinate.clone();
         hasUp = true;
@@ -258,41 +329,30 @@ char inputHandle() {
 }
 
 void review() {
-    vector<Coordinate>::iterator it = gameRecord.begin();
-    cheeseCollected = 0;
-    for(; it < gameRecord.end(); it += 5) {
-        map->getSquare(*it).setMouse(true);
-        for (int i = 0; i < 3; ++i) {
-            map->getSquare(*(it + 1 + i)).addCat();
-        }
-        map->getSquare(*(it + 4)).setCheese(true);
-
-        printMap(*map, cheeseCollected, cheeseGoal);
-
-        map->getSquare(*it).setMouse(false);
-        for (int i = 0; i < 3; ++i) {
-            map->getSquare(*(it + 1 + i)).removeCat();
-        }
-        map->getSquare(*(it + 4)).setCheese(false);
+    for(vector<Record>::iterator it = gameRecord.begin(); it < gameRecord.end(); ++it) {
+        cout << *it;
         Sleep(500);
     }
 }
 
 int main() {
     map = greeting();
+    gameRecord.emplace_back();
     Mouse mouse;
     Cat* cats = new Cat[3];
     cats[0] = Cat(map->getWidth() - 2, 1);
     cats[1] = Cat(1, map->getHeight() - 2);
     cats[2] = Cat(map->getWidth() - 2, map->getHeight() - 2);
     generateCheese();
-    gameRecord.push_back(*cheese);
+    gameRecord.back().setCheese(*cheese);
+    gameRecord.back().setCheeseNum(cheeseCollected, cheeseGoal);
 
     char input;
 
     while (!gameEnd) {
         printMap(*map, cheeseCollected, cheeseGoal);
         bool isValidInput;
+        gameRecord.emplace_back();
 
         //mouse move
         input = inputHandle();
@@ -309,24 +369,15 @@ int main() {
             cats[i].moveCat();
         }
 
-        if (gameEnd) {
-            vector<Coordinate>::iterator it = gameRecord.end() - 5;
-            gameRecord.push_back(*it);
-        } else {
-            gameRecord.push_back(*cheese);
-        }
+        gameRecord.back().setCheese(*cheese);
+        gameRecord.back().setCheeseNum(cheeseCollected, cheeseGoal);
     }
 
     char endGameInput = gameReview();
     switch (endGameInput) {
         case 'G':
         case 'g':
-            vector<Coordinate>::iterator it = gameRecord.end() - 5;
-            map->getSquare(*it++).setMouse(false);
-            for (int i = 0; i < 3; ++i) {
-                map->getSquare(*it++).removeCat();
-            }
-            map->getSquare(*it++).setCheese(false);
+            gameRecord.back().clear();
             review();
             break;
     }
