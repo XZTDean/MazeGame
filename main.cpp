@@ -249,6 +249,7 @@ bool gameEnd;
 int cheeseCollected;
 int cheeseGoal;
 Coordinate* cheese;
+short winLose;
 
 void generateCheese() {
     bool valid = false;
@@ -279,9 +280,10 @@ void getCheese() {
     map->getSquare(*cheese).setCheese(false);
     if (cheeseCollected >= cheeseGoal) {
         gameEnd = true;
+        winLose = 1;
         map->setAllVisible();
         printMap(*map, cheeseCollected, cheeseGoal);
-        cout << "Congratulations! You won!\n";
+        printWin();
     } else {
         delete cheese;
         generateCheese();
@@ -289,11 +291,11 @@ void getCheese() {
 }
 
 void eatenByCat() {
-    cout << "I'm sorry, you have been eaten!\n";
     gameEnd = true;
+    winLose = -1;
     map->setAllVisible();
     printMap(*map, cheeseCollected, cheeseGoal);
-    cout << "GAME OVER; please try again.\n";
+    printLose();
 }
 
 char inputHandle() {
@@ -333,15 +335,22 @@ void review() {
         cout << *it;
         Sleep(500);
     }
+    if (winLose > 0) {
+        printWin();
+    } else {
+        printLose();
+    }
 }
 
 int main() {
     bool restart;
     do {
         gameEnd = false;
+        winLose = 0;
         cheeseCollected = 0;
         cheeseGoal = 5;
         system("CLS");
+
         map = greeting();
         gameRecord.emplace_back();
         Mouse mouse;

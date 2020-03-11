@@ -85,12 +85,21 @@ void moveInvalid() {
 
 char gameReview() {
     char tmp[8];
-    cout << "Press G to review the whole game, R to restart, empty to exit\n";
+    cout << "\nPress G to review the whole game, R to restart, empty to exit\n";
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
     cout << "_\b";
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
     cin.getline(tmp, 8);
     return tmp[0];
+}
+
+void printLose() {
+    cout << "I'm sorry, you have been eaten!\n";
+    cout << "GAME OVER; please try again.\n";
+}
+
+void printWin() {
+    cout << "Congratulations! You won!\n";
 }
 
 #endif //MAZEGAME_UI_H
