@@ -61,8 +61,8 @@ public:
     }
 
 private:
-    int xCoordinate{};
-    int yCoordinate{};
+    int xCoordinate;
+    int yCoordinate;
 };
 
 
