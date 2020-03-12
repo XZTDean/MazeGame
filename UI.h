@@ -15,8 +15,8 @@ string instruction = "\nDIRECTIONS:\n\tFind 5 cheese before a cat eats you!"
                      "\n\tCat will track you if they can see you.";
 
 Map* greeting() {
-    int width = 20;
-    int height = 15;
+    int width;
+    int height;
     cout << "----------------------------------------\n";
     cout << "Welcome to Cat and Mouse Maze Adventure!\n";
     cout << "----------------------------------------\n";
@@ -25,6 +25,7 @@ Map* greeting() {
     char tmp[8];
     cout << "\nChoose the map size: (at least 10*10)\n";
     do {
+        width = 20;
         cout << "\tWidth: ";
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
         cout << "20\b\b";
@@ -35,6 +36,7 @@ Map* greeting() {
         }
     } while (width < 10);
     do {
+        height = 15;
         cout << "\tHeight: ";
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
         cout << "15\b\b";
