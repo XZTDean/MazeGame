@@ -1,5 +1,6 @@
 #include <ostream>
 #include <vector>
+#include <string>
 #include "Coordinate.h"
 using namespace std;
 
@@ -46,7 +47,7 @@ private:
     short catNumber;
     bool isVisited; //used in generate map
     short color;
-    char output;
+    string output;
 };
 
 class Map {

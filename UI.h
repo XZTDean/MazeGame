@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include "Map.h"
-#include <windows.h>
 using namespace std;
 
 #ifndef MAZEGAME_UI_H
@@ -27,9 +26,7 @@ Map* greeting() {
     do {
         width = 20;
         cout << "\tWidth: ";
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
-        cout << "20\b\b";
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+        cout << "\033[90m20\033[0m\b\b";
         cin.getline(tmp, 8);
         if (tmp[0] >= '0' && tmp[0] <= '9') {
             width = stoi(tmp);
@@ -38,9 +35,7 @@ Map* greeting() {
     do {
         height = 15;
         cout << "\tHeight: ";
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
-        cout << "15\b\b";
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+        cout << "\033[90m15\033[0m\b\b";
         cin.getline(tmp, 8);
         if (tmp[0] >= '0' && tmp[0] <= '9') {
             height = stoi(tmp);
@@ -51,7 +46,7 @@ Map* greeting() {
 }
 
 void printMap(const Map& map, int cheeseCollected, int cheeseGoal) {
-    system("CLS");
+    system("clear");
     cout << "Maze:\n" << map;
     cout << "Cheese collected: " << cheeseCollected << " of " << cheeseGoal << endl;
 }
@@ -69,9 +64,9 @@ char getInput() {
         }
     }
     if (input == '?') {
-        system("CLS");
+        system("clear");
         cout << instruction << endl;
-        system("pause");
+        cin.get();
         return '\0';
     }
     return '\1';
@@ -88,9 +83,7 @@ void moveInvalid() {
 char gameReview() {
     char tmp[8];
     cout << "\nPress G to review the whole game, R to restart, empty to exit\n";
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
-    cout << "_\b";
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+    cout << "\033[90m_\033[0m\b";
     cin.getline(tmp, 8);
     return tmp[0];
 }

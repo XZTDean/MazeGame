@@ -1,6 +1,5 @@
 
 #include "Map.h"
-#include <windows.h>
 #include <ctime>
 #include <cmath>
 
@@ -276,27 +275,20 @@ void Square::removeCat() {
 void Square::updateOutput() {
     if (mouse) {
         if (catNumber == 0) {
-            output = '@';
-            color = 9;
+            output = "\033[34m@\033[0m";
         } else {
-            output = 'X';
-            color = 4;
+            output = "\033[1;31mX\033[0m";
         }
     } else if (catNumber > 0) {
-        output = '!';
-        color = 4;
+        output = "\033[31m!\033[0m";
     } else if (isCheese) {
-        output = '$';
-        color = 6;
+        output = "\033[31m$\033[0m";
     } else if (!isVisible) {
-        output = '.';
-        color = 7;
+        output = "\033[37m.\033[0m";
     } else if (wall) {
-        output = '#';
-        color = 15;
+        output = "\033[97m#\033[0m";
     } else {
-        output = ' ';
-        color = 15;
+        output = " ";
     }
 }
 
@@ -309,7 +301,6 @@ void Square::statusCheck() {
 }
 
 ostream &operator<<(ostream &os, const Square &square) {
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),square.color);
     os << square.output;
     return os;
 }

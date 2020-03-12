@@ -1,4 +1,5 @@
 #include <ostream>
+#include <unistd.h>
 #include "Map.h"
 #include "Coordinate.h"
 #include "UI.h"
@@ -333,7 +334,7 @@ char inputHandle() {
 void review() {
     for(vector<Record>::iterator it = gameRecord.begin(); it < gameRecord.end(); ++it) {
         cout << *it;
-        Sleep(500);
+        usleep(500);
     }
     if (winLose > 0) {
         printWin();
@@ -349,7 +350,7 @@ int main() {
         winLose = 0;
         cheeseCollected = 0;
         cheeseGoal = 5;
-        system("CLS");
+        system("clear");
 
         map = greeting();
         gameRecord.emplace_back();
@@ -413,6 +414,5 @@ int main() {
         delete[] cats;
         delete map;
     } while (restart);
-//    system("pause");
     return 0;
 }
