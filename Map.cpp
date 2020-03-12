@@ -282,7 +282,7 @@ void Square::updateOutput() {
     } else if (catNumber > 0) {
         output = "\033[31m!\033[0m";
     } else if (isCheese) {
-        output = "\033[31m$\033[0m";
+        output = "\033[33m$\033[0m";
     } else if (!isVisible) {
         output = "\033[37m.\033[0m";
     } else if (wall) {
