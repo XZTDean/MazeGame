@@ -334,7 +334,7 @@ char inputHandle() {
 void review() {
     for(vector<Record>::iterator it = gameRecord.begin(); it < gameRecord.end(); ++it) {
         cout << *it;
-        usleep(500);
+        usleep(500000);
     }
     if (winLose > 0) {
         printWin();
@@ -389,6 +389,7 @@ int main() {
             gameRecord.back().setCheeseNum(cheeseCollected, cheeseGoal);
         }
 
+        cin.get();
         bool endGame = true;
         while (endGame) {
             char endGameInput = gameReview();
